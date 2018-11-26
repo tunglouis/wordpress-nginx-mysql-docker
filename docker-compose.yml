@@ -1,0 +1,37 @@
+version: '2'
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx_lsplace
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./logs/nginx:/var/log/nginx
+      - ./wordpress:/var/www/html
+    links:
+      - wordpress
+    restart: always
+
+  mysql:
+    image: mariadb
+    container_name: mysql_lsplace
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    restart: always
+
+  wordpress:
+    image: wordpress:php7.2-fpm
+    container_name: wordpress_lsplace
+    volumes:
+      - ./wordpress:/var/www/html
+    environment:
+      - WORDPRESS_DB_NAME=wordpress
+      - WORDPRESS_TABLE_PREFIX=wp_
+      - WORDPRESS_DB_HOST=mysql
+      - WORDPRESS_DB_PASSWORD=password
+    links:
+      - mysql
+    restart: always
